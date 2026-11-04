@@ -1,0 +1,19 @@
+{
+  "app-name": "RAWCaptureBooth-Fotobox",
+  "conn-type": "incoming",
+  "disable-settings": "Y",
+  "rcb-fester-pin": "FOTOBOX_PIN",
+  "override-settings": {
+    "custom-rendezvous-server": "mueller.black",
+    "relay-server": "mueller.black",
+    "api-server": "",
+    "key": "5BEjehzyYmBBpo8sQ7ApcSs1nprhXyI3K87PN8IgZ3k=",
+    "enable-check-update": "N",
+    "allow-auto-update": "N",
+    "approve-mode": "password",
+    "verification-method": "use-permanent-password",
+    "disable-change-permanent-password": "Y",
+    "disable-change-id": "Y",
+    "remove-preset-password-warning": "Y"
+  }
+}

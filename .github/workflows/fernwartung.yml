@@ -1,6 +1,8 @@
 # RAWCaptureBooth-Fernwartung: baut die beiden gebrandeten Windows-Clients
 #   RAWCaptureBooth-Support.exe    Kunde, nur eingehend, Quick Support ohne Installation
 #   RAWCaptureBooth-Techniker.exe  Support, nur ausgehend
+#   RAWCaptureBooth-Fotobox.exe    eigene Fotoboxen, installierbar, fester PIN aus dem
+#                                  Geheimnis FOTOBOX_PIN (nur als Prüfsumme eingebettet)
 #
 # Abgeleitet vom Windows-x64-Teil aus flutter-build.yml (RustDesk 1.5.1).
 # Signiert wird über Azure Artifact Signing (OIDC, kein Geheimnis im Repo), sobald die
@@ -47,6 +49,7 @@ jobs:
         variante:
           - { id: kunde, name: RAWCaptureBooth-Support, quick-support: "1" }
           - { id: techniker, name: RAWCaptureBooth-Techniker, quick-support: "" }
+          - { id: fotobox, name: RAWCaptureBooth-Fotobox, quick-support: "" }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
@@ -62,6 +65,8 @@ jobs:
 
       - name: Branding anwenden
         shell: bash
+        env:
+          FOTOBOX_PIN: ${{ matrix.variante.id == 'fotobox' && secrets.FOTOBOX_PIN || '' }}
         run: |
           pip3 install pillow
           python3 branding/anwenden.py ${{ matrix.variante.id }}
@@ -236,9 +241,11 @@ jobs:
           name: ${{ matrix.variante.name }}
           path: ./Ausgabe/${{ matrix.variante.name }}.exe
           if-no-files-found: error
+          # Die Fotobox-Variante gehört nur auf die eigenen Boxen: kurz vorhalten, kein Release
+          retention-days: ${{ matrix.variante.id == 'fotobox' && 1 || 30 }}
 
       - name: Release anlegen
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') && matrix.variante.id != 'fotobox'
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           files: ./Ausgabe/${{ matrix.variante.name }}.exe

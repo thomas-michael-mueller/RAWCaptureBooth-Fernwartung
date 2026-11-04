@@ -7,10 +7,16 @@ für den Support von RAWCaptureBooth. Server: `mueller.black` (eigener RustDesk-
 | --- | --- | --- |
 | `RAWCaptureBooth-Support.exe` | Kunde | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt |
 | `RAWCaptureBooth-Techniker.exe` | Support | nur ausgehend, keine Installation |
+| `RAWCaptureBooth-Fotobox.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), fester PIN ohne Annahme per Klick |
 
 Zugang beim Kunden wie bei RustDesk üblich: einmaliges Passwort, das bei jedem Start neu entsteht,
 und/oder Annahme per Klick. Kein fest eingebautes Passwort, da es aus der Programmdatei lesbar wäre
 und für alle Kunden gälte.
+
+Der feste PIN der Fotobox-Variante steht nie im Repository. Er kommt aus dem GitHub-Geheimnis
+`FOTOBOX_PIN` (Umgebung `signatur`, mindestens 12 Zeichen) und wird nur als Prüfsumme mit
+Zufallswert eingebettet. Die Fotobox-Datei wird nur einen Tag vorgehalten und nie als Release
+veröffentlicht.
 
 ## Was gegenüber RustDesk geändert ist
 

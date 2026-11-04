@@ -1,6 +1,6 @@
 """Branding der RAWCaptureBooth-Fernwartung auf den RustDesk-Quellstand anwenden.
 
-Aufruf:  python branding/anwenden.py <kunde|techniker>
+Aufruf:  python branding/anwenden.py <kunde|techniker|fotobox>
 
 Läuft im Build-Ablauf vor dem Bauen und lässt sich lokal beliebig oft wiederholen
 (jede Ersetzung ist idempotent). Ändert:
@@ -11,10 +11,14 @@ Läuft im Build-Ablauf vor dem Bauen und lässt sich lokal beliebig oft wiederho
   - Dateieigenschaften           Runner.rc, libs/portable/Cargo.toml
 """
 
+import base64
+import hashlib
 import io
 import json
+import os
 import re
-import shutil
+import secrets
+import string
 import sys
 from pathlib import Path
 
@@ -35,6 +39,8 @@ FARBEN = {
     "idColor": "0xFFE8A90F",
     "button": "0xFFD89904",
 }
+
+VARIANTEN = ("kunde", "techniker", "fotobox")
 
 ICO_GROESSEN = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
 
@@ -110,12 +116,36 @@ def dateieigenschaften(variante: dict) -> None:
     ersetzen(cargo, r'(?m)^(description = )"[^"]*"', rf'\1"{name}"')
 
 
+MINDESTLAENGE_PIN = 12
+
+
+def fester_pin(variante: dict) -> None:
+    """Fester PIN aus einer Umgebungsvariable, nie aus dem Repository.
+
+    Eingebettet wird nur die Prüfsumme mit Zufallswert, im Format der
+    RustDesk-Voreinstellung (HARD_SETTINGS "password" = "00" + Base64(SHA-256(PIN + Salt))).
+    Die Programmdatei ist öffentlich herunterladbar; ein kurzer PIN ließe sich aus der
+    Prüfsumme durch Ausprobieren zurückrechnen, daher die Mindestlänge.
+    """
+    name = variante.pop("rcb-fester-pin", None)
+    if not name:
+        return
+    pin = os.environ.get(name, "")
+    if len(pin) < MINDESTLAENGE_PIN:
+        sys.exit(f"{name} fehlt oder ist kürzer als {MINDESTLAENGE_PIN} Zeichen")
+    salt = "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32))
+    pruefsumme = hashlib.sha256((pin + salt).encode("utf-8")).digest()
+    variante["password"] = "00" + base64.b64encode(pruefsumme).decode("ascii")
+    variante["salt"] = salt
+
+
 def main() -> None:
-    if len(sys.argv) != 2 or sys.argv[1] not in ("kunde", "techniker"):
-        sys.exit("Aufruf: python branding/anwenden.py <kunde|techniker>")
+    if len(sys.argv) != 2 or sys.argv[1] not in VARIANTEN:
+        sys.exit(f"Aufruf: python branding/anwenden.py <{'|'.join(VARIANTEN)}>")
     quelle = BRANDING / f"{sys.argv[1]}.json"
     variante = json.loads(lesen(quelle))
-    shutil.copyfile(quelle, BRANDING / "aktiv.json")
+    fester_pin(variante)
+    schreiben(BRANDING / "aktiv.json", json.dumps(variante, indent=2, ensure_ascii=False) + "\n")
     symbole()
     logos()
     farben()
