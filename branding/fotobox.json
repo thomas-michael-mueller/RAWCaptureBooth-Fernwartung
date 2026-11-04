@@ -1,8 +1,7 @@
 {
   "app-name": "RAWCaptureBooth-Fotobox",
   "conn-type": "incoming",
-  "disable-settings": "Y",
-  "rcb-fester-pin": "FOTOBOX_PIN",
+  "disable-change-id": "Y",
   "override-settings": {
     "custom-rendezvous-server": "mueller.black",
     "relay-server": "mueller.black",
@@ -12,8 +11,10 @@
     "allow-auto-update": "N",
     "approve-mode": "password",
     "verification-method": "use-permanent-password",
-    "disable-change-permanent-password": "Y",
-    "disable-change-id": "Y",
-    "remove-preset-password-warning": "Y"
+    "hide-server-settings": "Y",
+    "hide-network-settings": "Y",
+    "hide-proxy-settings": "Y",
+    "hide-websocket-settings": "Y",
+    "hide-remote-printer-settings": "Y"
   }
 }
