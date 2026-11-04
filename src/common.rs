@@ -2493,6 +2493,7 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    load_rcb_branding();
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
@@ -2591,6 +2592,7 @@ pub fn get_dst_align_rgba() -> usize {
 }
 
 pub fn read_custom_client(config: &str) {
+    load_rcb_branding();
     let Ok(data) = decode64(config) else {
         log::error!("Failed to decode custom client config");
         return;
@@ -2604,13 +2606,34 @@ pub fn read_custom_client(config: &str) {
         log::error!("Failed to dec custom client config");
         return;
     };
-    let Ok(mut data) =
+    let Ok(data) =
         serde_json::from_slice::<std::collections::HashMap<String, serde_json::Value>>(&data)
     else {
         log::error!("Failed to parse custom client config");
         return;
     };
+    apply_custom_client_config(data);
+}
 
+// RAWCaptureBooth-Fernwartung: Branding der Variante, beim Bauen aus
+// branding/<variante>.json nach branding/aktiv.json kopiert (siehe BRANDING.md).
+// Gleiches Format wie die signierte custom.txt, nur ohne Signatur, weil es fest
+// im Programm steckt und nicht von außen kommt.
+const RCB_BRANDING: &str = include_str!("../branding/aktiv.json");
+
+pub fn load_rcb_branding() {
+    let Ok(data) = serde_json::from_str::<std::collections::HashMap<String, serde_json::Value>>(
+        RCB_BRANDING,
+    ) else {
+        log::error!("Failed to parse RAWCaptureBooth branding");
+        return;
+    };
+    apply_custom_client_config(data);
+}
+
+fn apply_custom_client_config(
+    mut data: std::collections::HashMap<String, serde_json::Value>,
+) {
     if let Some(app_name) = data.remove("app-name") {
         if let Some(app_name) = app_name.as_str() {
             *config::APP_NAME.write().unwrap() = app_name.to_owned();

@@ -374,6 +374,11 @@ mod win {
     /// Note: This function must be kept in sync with `src/core_main.rs`.
     #[inline]
     pub(super) fn is_quick_support_exe(exe: &str) -> bool {
+        // RAWCaptureBooth-Fernwartung: die Kunden-Variante ist immer Quick Support,
+        // unabhängig vom Dateinamen (RCB_QUICK_SUPPORT setzt der Build-Ablauf).
+        if option_env!("RCB_QUICK_SUPPORT").is_some() {
+            return true;
+        }
         let exe = exe.to_lowercase();
         exe.contains("-qs-") || exe.contains("-qs.exe") || exe.contains("_qs.exe")
     }

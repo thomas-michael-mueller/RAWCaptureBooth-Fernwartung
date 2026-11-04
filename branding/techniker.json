@@ -1,0 +1,13 @@
+{
+  "app-name": "RAWCaptureBooth-Techniker",
+  "conn-type": "outgoing",
+  "disable-installation": "Y",
+  "override-settings": {
+    "custom-rendezvous-server": "mueller.black",
+    "relay-server": "mueller.black",
+    "api-server": "",
+    "key": "5BEjehzyYmBBpo8sQ7ApcSs1nprhXyI3K87PN8IgZ3k=",
+    "enable-check-update": "N",
+    "allow-auto-update": "N"
+  }
+}

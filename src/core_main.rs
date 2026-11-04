@@ -905,6 +905,11 @@ fn parse_silent_install_args(args: &[String]) -> (Option<bool>, bool) {
 #[cfg(windows)]
 #[inline]
 fn is_quick_support_exe(exe: &str) -> bool {
+    // RAWCaptureBooth-Fernwartung: die Kunden-Variante (nur eingehend) ist immer
+    // Quick Support, unabhängig vom Dateinamen.
+    if config::is_incoming_only() {
+        return true;
+    }
     let exe = exe.to_lowercase();
     exe.contains("-qs-") || exe.contains("-qs.exe") || exe.contains("_qs.exe")
 }
