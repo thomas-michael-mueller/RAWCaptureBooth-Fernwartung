@@ -31,8 +31,9 @@ Dauer rund 45 Minuten je Variante (parallel).
 
 Signiert wird über Azure Artifact Signing (Konto `rawcapturebooth`, Profil `RAWCaptureBooth`), sobald
 die Repository-Variablen `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` und `AZURE_SUBSCRIPTION_ID` gesetzt sind.
-Die Anmeldung läuft über OIDC (föderierte Anmeldeinformation für dieses Repository), es liegt kein
-Geheimnis im Repository. Die App-Registrierung braucht am Signaturkonto die Rolle
+Die Anmeldung läuft über OIDC (föderierte Anmeldeinformation für die GitHub-Umgebung `signatur`
+dieses Repositorys, App-Registrierung „RAWCaptureBooth-Fernwartung GitHub-Signatur“), es liegt kein
+Geheimnis im Repository. Die Umgebung ist auf den Branch `rawcapturebooth` und Tags `v*` beschränkt. Die App-Registrierung braucht am Signaturkonto die Rolle
 „Artifact Signing Certificate Profile Signer“.
 
 ## RustDesk-Update übernehmen

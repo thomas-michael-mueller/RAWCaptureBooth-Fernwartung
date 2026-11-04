@@ -38,6 +38,9 @@ jobs:
     name: ${{ matrix.variante.name }}
     needs: [generate-bridge]
     runs-on: windows-2022
+    # Die Azure-Anmeldung vertraut nur dieser Umgebung; sie ist auf den Branch
+    # rawcapturebooth und Tags v* beschränkt.
+    environment: signatur
     strategy:
       fail-fast: false
       matrix:
