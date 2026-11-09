@@ -824,5 +824,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Trust duration (days)", "Vertrauensdauer (Tage)"),
         ("Renew trust", "Vertrauen erneuern"),
         ("install-directory-not-empty-tip", "Der ausgewählte Ordner ist nicht leer. Bei der Installation können vorhandene Daten gelöscht werden. Erwägen Sie, einen anderen Ordner auszuwählen."),
+        ("rcb_paid_accept_btn", "Kostenpflichtig annehmen"),
+        ("rcb_paid_notice", "Mit Klick auf „Kostenpflichtig annehmen“ beauftragen Sie eine kostenpflichtige Fernwartung zu {rate} je Stunde inkl. MwSt. und akzeptieren die AGB für die Fernwartung. Sie verlangen ausdrücklich, dass die Fernwartung sofort beginnt, und wissen, dass Ihr Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist."),
+        ("rcb_terms_link", "AGB Fernwartung und Widerrufsbelehrung"),
     ].iter().cloned().collect();
 }

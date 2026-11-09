@@ -5,13 +5,17 @@ für den Support von RAWCaptureBooth. Server: `mueller.black` (eigener RustDesk-
 
 | Datei | Für | Verhalten |
 | --- | --- | --- |
-| `RAWCaptureBooth-Support.exe` | Kunde | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt |
+| `RAWCaptureBooth-Support.exe` | Kunde | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt, Annahme nur per Klick mit Kostenhinweis |
 | `RAWCaptureBooth-Techniker.exe` | Support | nur ausgehend, keine Installation |
 | `RAWCaptureBooth-Fotobox.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), Zugang nur über den dauerhaften PIN, ohne Annahme per Klick |
 
-Zugang beim Kunden wie bei RustDesk üblich: einmaliges Passwort, das bei jedem Start neu entsteht,
-und/oder Annahme per Klick. Kein fest eingebautes Passwort, da es aus der Programmdatei lesbar wäre
-und für alle Kunden gälte.
+Zugang beim Kunden nur über Annahme per Klick (`approve-mode` = `click`), kein Einmalpasswort.
+Über dem Knopf „Kostenpflichtig annehmen“ steht ein Hinweis auf Stundensatz, AGB und das Erlöschen
+des Widerrufsrechts, mit Link auf die Fernwartungs-AGB. Gesteuert über `kunde.json`:
+`rcb-kostenpflichtig` (`Y`), `rcb-stundensatz` (z. B. `70 €`), `rcb-agb-url`. Die Texte stehen als
+`rcb_paid_*` / `rcb_terms_link` in `src/lang/de.rs` und `src/lang/en.rs` (übrige Sprachen fallen auf
+Englisch zurück). „Annehmen und erhöhen“ ist im Annahmefenster ausgeblendet, damit jede Annahme über
+den Knopf mit Kostenhinweis läuft; „Erhöhen“ bleibt nach der Annahme verfügbar.
 
 Die Fotobox-Variante enthält keinen PIN. Nach der Installation wird an der Box unter
 Einstellungen → Sicherheit ein dauerhaftes Passwort gesetzt (oder als Administrator
@@ -30,6 +34,8 @@ einbetten (nur als Prüfsumme, mindestens 12 Zeichen); keine Variante nutzt das 
   Format der RustDesk-`custom.txt`, nur ohne Signatur.
 - `src/core_main.rs`, `libs/portable/src/main.rs` – die Kunden-Variante ist immer Quick Support,
   ohne `-qs-` im Dateinamen.
+- `flutter/lib/desktop/pages/server_page.dart` – Kostenhinweis und Knopf „Kostenpflichtig annehmen“
+  im Annahmefenster der Kunden-Variante; `src/lang/de.rs`, `src/lang/en.rs` – Texte dazu.
 - `.github/workflows/fernwartung.yml` – baut beide Varianten und signiert sie. Alle übrigen
   RustDesk-Workflows sind entfernt (außer `bridge.yml`, das gebraucht wird).
 

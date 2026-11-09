@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../common.dart';
@@ -1078,9 +1079,12 @@ class _CmControlPanel extends StatelessWidget {
                 key: kOptionHideElevateButtonInAcceptWindow) !=
             'Y';
     final showAccept = model.approveMode != 'password';
+    // RAWCaptureBooth-Fernwartung: Kunden-Variante, Annahme ist kostenpflichtig.
+    final paid = bind.mainGetHardOption(key: 'rcb-kostenpflichtig') == 'Y';
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        if (paid && showAccept) Flexible(child: buildPaidNotice(context)),
         Offstage(
           offstage: !showElevation || !showAccept,
           child: buildButton(context, color: Colors.green[700], onClick: () {
@@ -1111,7 +1115,7 @@ class _CmControlPanel extends StatelessWidget {
                         handleAccept(context);
                         windowManager.minimize();
                       },
-                      text: 'Accept',
+                      text: paid ? 'rcb_paid_accept_btn' : 'Accept',
                       textColor: Colors.white,
                     ),
                   ],
@@ -1131,6 +1135,44 @@ class _CmControlPanel extends StatelessWidget {
         ),
       ],
     ).marginOnly(bottom: buttonBottomMargin);
+  }
+
+  // RAWCaptureBooth-Fernwartung: Hinweis auf Kosten, AGB und Widerrufsrecht über dem
+  // Annehmen-Knopf. Stundensatz und AGB-Adresse kommen aus branding/kunde.json.
+  Widget buildPaidNotice(BuildContext context) {
+    final rate = bind.mainGetHardOption(key: 'rcb-stundensatz');
+    final url = bind.mainGetHardOption(key: 'rcb-agb-url');
+    final style = TextStyle(fontSize: 11.5, height: 1.3);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: MyTheme.accent.withOpacity(0.08),
+        border: Border.all(color: MyTheme.accent50),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(translate('rcb_paid_notice').replaceAll('{rate}', rate),
+                style: style),
+            if (url.isNotEmpty)
+              InkWell(
+                onTap: () => launchUrl(Uri.parse(url)),
+                child: Text(
+                  translate('rcb_terms_link'),
+                  style: style.copyWith(
+                    color: MyTheme.accent,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ).marginOnly(top: 4),
+          ],
+        ),
+      ),
+    ).marginOnly(left: 4, right: 4, bottom: 4);
   }
 
   Widget buildButton(BuildContext context,

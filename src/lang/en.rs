@@ -292,5 +292,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("api_server_empty_tip", "With API Server empty, your custom server defaults to HTTP. Contact your administrator to enable HTTPS."),
         ("android-logs-folder-tip", "Choose Android → media to store log files."),
         ("install-directory-not-empty-tip", "The selected folder is not empty. Installation may delete existing data. Consider choosing a different folder."),
+        ("rcb_paid_accept_btn", "Accept (paid)"),
+        ("rcb_paid_notice", "By clicking “Accept (paid)” you order a paid remote support session at {rate} per hour incl. VAT and accept the terms and conditions for remote support. You expressly request that the session starts immediately and acknowledge that you lose your right of withdrawal once the service has been fully provided."),
+        ("rcb_terms_link", "Terms and cancellation policy"),
     ].iter().cloned().collect();
 }
