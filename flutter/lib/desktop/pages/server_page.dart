@@ -1243,6 +1243,22 @@ class _CmControlPanel extends StatelessWidget {
   void handleAccept(BuildContext context) {
     final model = Provider.of<ServerModel>(context, listen: false);
     model.sendLoginResponse(client, true);
+    // RAWCaptureBooth-Fernwartung: Techniker per Chat informieren, dass die
+    // Sitzung kostenpflichtig angenommen wurde (mit Uhrzeit als Beleg).
+    if (bind.mainGetHardOption(key: 'rcb-kostenpflichtig') == 'Y') {
+      final rate = bind.mainGetHardOption(key: 'rcb-stundensatz');
+      final t = DateTime.now();
+      String zwei(int n) => n.toString().padLeft(2, '0');
+      final zeit = '${zwei(t.day)}.${zwei(t.month)}.${t.year} '
+          '${zwei(t.hour)}:${zwei(t.minute)} Uhr';
+      final connId = client.id;
+      Future.delayed(const Duration(seconds: 2), () {
+        bind.cmSendChat(
+            connId: connId,
+            msg: 'Kostenpflichtige Fernwartung angenommen '
+                '($rate je Stunde inkl. MwSt.) – $zeit');
+      });
+    }
   }
 
   void handleElevate(BuildContext context) {

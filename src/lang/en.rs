@@ -295,5 +295,9 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("rcb_paid_accept_btn", "Accept (paid)"),
         ("rcb_paid_notice", "By clicking “Accept (paid)” you order a paid remote support session at {rate} per hour incl. VAT and accept the terms and conditions for remote support. You expressly request that the session starts immediately and acknowledge that you lose your right of withdrawal once the service has been fully provided."),
         ("rcb_terms_link", "Terms and cancellation policy"),
+        ("rcb_banner_free_title", "Free support"),
+        ("rcb_banner_free_sub", "Diagnosis and troubleshooting"),
+        ("rcb_banner_paid_title", "Paid service"),
+        ("rcb_banner_paid_sub", "Setup and assistance · {rate} per hour incl. VAT"),
     ].iter().cloned().collect();
 }

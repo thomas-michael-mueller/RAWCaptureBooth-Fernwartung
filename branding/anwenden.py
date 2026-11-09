@@ -1,6 +1,6 @@
 """Branding der RAWCaptureBooth-Fernwartung auf den RustDesk-Quellstand anwenden.
 
-Aufruf:  python branding/anwenden.py <kunde|techniker|fotobox>
+Aufruf:  python branding/anwenden.py <kunde|service|techniker|fotobox>
 
 Läuft im Build-Ablauf vor dem Bauen und lässt sich lokal beliebig oft wiederholen
 (jede Ersetzung ist idempotent). Ändert:
@@ -22,7 +22,7 @@ import string
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 WURZEL = Path(__file__).resolve().parent.parent
 BRANDING = WURZEL / "branding"
@@ -40,7 +40,7 @@ FARBEN = {
     "button": "0xFFD89904",
 }
 
-VARIANTEN = ("kunde", "techniker", "fotobox")
+VARIANTEN = ("kunde", "service", "techniker", "fotobox")
 
 ICO_GROESSEN = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
 
@@ -61,8 +61,32 @@ def ersetzen(pfad: Path, muster: str, ersatz: str, anzahl: int = 1) -> None:
     schreiben(pfad, neu)
 
 
-def symbole() -> None:
+def schrift(groesse: int):
+    for name in ("C:/Windows/Fonts/arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"):
+        if Path(name).exists():
+            return ImageFont.truetype(name, groesse)
+    return ImageFont.load_default(size=groesse)
+
+
+def euro_plakette(icon: Image.Image) -> Image.Image:
+    """Kostenpflichtige Variante: weißer Kreis mit €-Zeichen unten rechts im Symbol."""
+    icon = icon.copy()
+    b = icon.width
+    d = round(b * 0.46)
+    x0, y0 = b - d, b - d
+    zeichnen = ImageDraw.Draw(icon)
+    rand = max(2, round(b * 0.025))
+    zeichnen.ellipse((x0, y0, b - 1, b - 1), fill=(0, 0, 0, 255))
+    zeichnen.ellipse((x0 + rand, y0 + rand, b - 1 - rand, b - 1 - rand), fill=(255, 255, 255, 255))
+    zeichnen.text((x0 + d / 2, y0 + d / 2), "€", font=schrift(round(d * 0.62)),
+                  fill=(0, 0, 0, 255), anchor="mm")
+    return icon
+
+
+def symbole(variante: dict) -> None:
     icon = Image.open(QUELLE / "icon.png").convert("RGBA")
+    if variante.get("rcb-banner") == "paid":
+        icon = euro_plakette(icon)
     for ziel in (
         WURZEL / "res" / "icon.ico",
         WURZEL / "res" / "tray-icon.ico",
@@ -146,7 +170,7 @@ def main() -> None:
     variante = json.loads(lesen(quelle))
     fester_pin(variante)
     schreiben(BRANDING / "aktiv.json", json.dumps(variante, indent=2, ensure_ascii=False) + "\n")
-    symbole()
+    symbole(variante)
     logos()
     farben()
     dateieigenschaften(variante)

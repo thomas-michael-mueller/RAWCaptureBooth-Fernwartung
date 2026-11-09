@@ -1,5 +1,8 @@
 # RAWCaptureBooth-Fernwartung: baut die beiden gebrandeten Windows-Clients
-#   RAWCaptureBooth-Support.exe    Kunde, nur eingehend, Quick Support ohne Installation
+#   RAWCaptureBooth-Support.exe    Kunde, kostenloser Support (Diagnose, Fehlerbehebung), nur eingehend,
+#                                  Quick Support ohne Installation
+#   RAWCaptureBooth-Service.exe    Kunde, kostenpflichtige Hilfe, wie Support, aber Annahme nur per
+#                                  Klick mit Kostenhinweis und AGB
 #   RAWCaptureBooth-Techniker.exe  Support, nur ausgehend
 #   RAWCaptureBooth-Fotobox.exe    eigene Fotoboxen, installierbar, Zugang nur über den
 #                                  dauerhaften PIN, der nach der Installation an der Box gesetzt wird
@@ -48,6 +51,7 @@ jobs:
       matrix:
         variante:
           - { id: kunde, name: RAWCaptureBooth-Support, quick-support: "1" }
+          - { id: service, name: RAWCaptureBooth-Service, quick-support: "1" }
           - { id: techniker, name: RAWCaptureBooth-Techniker, quick-support: "" }
           - { id: fotobox, name: RAWCaptureBooth-Fotobox, quick-support: "" }
     steps:

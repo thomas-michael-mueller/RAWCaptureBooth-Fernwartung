@@ -75,6 +75,39 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         block: _block, mask: true, use: canBeBlocked, child: child);
   }
 
+  // RAWCaptureBooth-Fernwartung: Farbbalken, an dem Kunden den kostenlosen
+  // Support-Client (grün) vom kostenpflichtigen Service-Client (gold) unterscheiden.
+  // Gesteuert über "rcb-banner" in branding/<variante>.json.
+  Widget buildRcbBanner() {
+    final art = bind.mainGetHardOption(key: 'rcb-banner');
+    if (art != 'free' && art != 'paid') return const Offstage();
+    final paid = art == 'paid';
+    final rate = bind.mainGetHardOption(key: 'rcb-stundensatz');
+    final titel = translate(paid ? 'rcb_banner_paid_title' : 'rcb_banner_free_title');
+    final text = translate(paid ? 'rcb_banner_paid_sub' : 'rcb_banner_free_sub')
+        .replaceAll('{rate}', rate);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: paid ? MyTheme.accent : const Color(0xFF2E7D32),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(titel,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold)),
+          Text(text,
+              style: const TextStyle(color: Colors.white, fontSize: 12.5)),
+        ],
+      ),
+    ).marginOnly(left: 20, right: 16, top: 10, bottom: 4);
+  }
+
   Widget buildLeftPane(BuildContext context) {
     final isIncomingOnly = bind.isIncomingOnly();
     final isOutgoingOnly = bind.isOutgoingOnly();
@@ -89,6 +122,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         alignment: Alignment.center,
         child: loadLogo(),
       ),
+      if (!isOutgoingOnly) buildRcbBanner(),
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),

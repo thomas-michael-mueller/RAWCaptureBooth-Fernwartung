@@ -1,0 +1,20 @@
+{
+  "app-name": "RAWCaptureBooth-Service",
+  "conn-type": "incoming",
+  "disable-installation": "Y",
+  "disable-settings": "Y",
+  "rcb-banner": "paid",
+  "rcb-kostenpflichtig": "Y",
+  "rcb-stundensatz": "70 €",
+  "rcb-agb-url": "https://rawcapturebooth.app/agb-fernwartung.html",
+  "override-settings": {
+    "custom-rendezvous-server": "mueller.black",
+    "relay-server": "mueller.black",
+    "api-server": "",
+    "key": "5BEjehzyYmBBpo8sQ7ApcSs1nprhXyI3K87PN8IgZ3k=",
+    "enable-check-update": "N",
+    "allow-auto-update": "N",
+    "approve-mode": "click",
+    "hide-elevate-button-in-accept-window": "Y"
+  }
+}

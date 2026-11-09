@@ -5,14 +5,19 @@ für den Support von RAWCaptureBooth. Server: `mueller.black` (eigener RustDesk-
 
 | Datei | Für | Verhalten |
 | --- | --- | --- |
-| `RAWCaptureBooth-Support.exe` | Kunde | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt, Annahme nur per Klick mit Kostenhinweis |
+| `RAWCaptureBooth-Support.exe` | Kunde, kostenloser Support | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt, grüner Balken „Kostenloser Support“ |
+| `RAWCaptureBooth-Service.exe` | Kunde, kostenpflichtige Hilfe | wie Support, aber goldener Balken „Kostenpflichtiger Service“, €-Plakette im Symbol, Annahme nur per Klick mit Kostenhinweis |
 | `RAWCaptureBooth-Techniker.exe` | Support | nur ausgehend, keine Installation |
 | `RAWCaptureBooth-Fotobox.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), Zugang nur über den dauerhaften PIN, ohne Annahme per Klick |
 
-Zugang beim Kunden nur über Annahme per Klick (`approve-mode` = `click`), kein Einmalpasswort.
+Support-Client: Zugang wie bei RustDesk üblich, Einmalpasswort und/oder Annahme per Klick.
+
+Service-Client: Zugang nur über Annahme per Klick (`approve-mode` = `click`), kein Einmalpasswort.
 Über dem Knopf „Kostenpflichtig annehmen“ steht ein Hinweis auf Stundensatz, AGB und das Erlöschen
-des Widerrufsrechts, mit Link auf die Fernwartungs-AGB. Gesteuert über `kunde.json`:
-`rcb-kostenpflichtig` (`Y`), `rcb-stundensatz` (z. B. `70 €`), `rcb-agb-url`. Die Texte stehen als
+des Widerrufsrechts, mit Link auf die Fernwartungs-AGB. Gesteuert über `service.json`:
+`rcb-kostenpflichtig` (`Y`), `rcb-stundensatz` (z. B. `70 €`), `rcb-agb-url`. Nach der Annahme
+schickt der Client dem Techniker automatisch eine Chatnachricht mit Stundensatz und Uhrzeit.
+`rcb-banner` (`free`/`paid`) wählt den Farbbalken im Hauptfenster (`desktop_home_page.dart`). Die Texte stehen als
 `rcb_paid_*` / `rcb_terms_link` in `src/lang/de.rs` und `src/lang/en.rs` (übrige Sprachen fallen auf
 Englisch zurück). „Annehmen und erhöhen“ ist im Annahmefenster ausgeblendet, damit jede Annahme über
 den Knopf mit Kostenhinweis läuft; „Erhöhen“ bleibt nach der Annahme verfügbar.
@@ -27,7 +32,7 @@ einbetten (nur als Prüfsumme, mindestens 12 Zeichen); keine Variante nutzt das 
 
 ## Was gegenüber RustDesk geändert ist
 
-- `branding/` – Varianten (`kunde.json`, `techniker.json`), Quellgrafiken, `anwenden.py`.
+- `branding/` – Varianten (`kunde.json`, `service.json`, `techniker.json`, `fotobox.json`), Quellgrafiken, `anwenden.py`.
   `anwenden.py <variante>` kopiert die Variante nach `aktiv.json`, erzeugt Symbole und Logos,
   setzt die Akzentfarbe (RAWCaptureBooth-Gold) und die Dateieigenschaften.
 - `src/common.rs` – `load_rcb_branding()` liest `branding/aktiv.json` (beim Bauen eingebettet) im
