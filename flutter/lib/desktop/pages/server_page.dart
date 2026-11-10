@@ -1137,7 +1137,7 @@ class _CmControlPanel extends StatelessWidget {
     ).marginOnly(bottom: buttonBottomMargin);
   }
 
-  // RAWCaptureBooth-Fernwartung: Hinweis auf Kosten, AGB und Widerrufsrecht über dem
+  // RAWCaptureBooth-Fernwartung: Hinweis auf Kosten und AGB über dem
   // Annehmen-Knopf. Stundensatz und AGB-Adresse kommen aus branding/kunde.json.
   Widget buildPaidNotice(BuildContext context) {
     final rate = bind.mainGetHardOption(key: 'rcb-stundensatz');
