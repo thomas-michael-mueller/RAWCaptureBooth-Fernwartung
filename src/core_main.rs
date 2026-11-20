@@ -215,6 +215,8 @@ pub fn core_main() -> Option<CoreMainAction> {
             crate::platform::try_remove_temp_update_files();
             hbb_common::config::PeerConfig::preload_peers();
         }
+        #[cfg(windows)]
+        rcb_unbeaufsichtigt_vorbereiten();
         std::thread::spawn(move || crate::start_server(false, no_server));
     } else {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -904,6 +906,31 @@ fn parse_silent_install_args(args: &[String]) -> (Option<bool>, bool) {
 /// Note: This function must be kept in sync with `libs/portable/src/main.rs`.
 #[cfg(windows)]
 #[inline]
+// RAWCaptureBooth-Fernwartung: Variante für unbeaufsichtigten Zugriff mit festem PIN
+// ("rcb-unbeaufsichtigt" in branding/fernzugriff.json). Bei jedem Start bleibt der Zugang
+// gesperrt, bis der Kunde im Hauptfenster bestätigt (desktop_home_page.dart schaltet den
+// Dienst dann ein). Solange das Programm läuft, bleibt der PC wach, damit der Support ihn
+// später erreicht.
+#[cfg(windows)]
+fn rcb_unbeaufsichtigt_vorbereiten() {
+    let aktiv = config::HARD_SETTINGS
+        .read()
+        .unwrap()
+        .get("rcb-unbeaufsichtigt")
+        .map_or(false, |v| v == "Y");
+    if !aktiv {
+        return;
+    }
+    config::Config::set_option("stop-service".into(), "Y".into());
+    std::thread::spawn(|| {
+        // Mit Bildschirm: auf Geräten mit Modern Standby hält nur das den PC wach.
+        let _wach = crate::platform::get_wakelock(true);
+        loop {
+            std::thread::sleep(std::time::Duration::from_secs(3600));
+        }
+    });
+}
+
 fn is_quick_support_exe(exe: &str) -> bool {
     // RAWCaptureBooth-Fernwartung: die Kunden-Variante (nur eingehend) ist immer
     // Quick Support, unabhängig vom Dateinamen.

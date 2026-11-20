@@ -1,6 +1,6 @@
 """Branding der RAWCaptureBooth-Fernwartung auf den RustDesk-Quellstand anwenden.
 
-Aufruf:  python branding/anwenden.py <kunde|service|techniker|fotobox>
+Aufruf:  python branding/anwenden.py <kunde|service|fernzugriff|techniker|fotobox>
 
 Läuft im Build-Ablauf vor dem Bauen und lässt sich lokal beliebig oft wiederholen
 (jede Ersetzung ist idempotent). Ändert:
@@ -40,7 +40,7 @@ FARBEN = {
     "button": "0xFFD89904",
 }
 
-VARIANTEN = ("kunde", "service", "techniker", "fotobox")
+VARIANTEN = ("kunde", "service", "fernzugriff", "techniker", "fotobox")
 
 ICO_GROESSEN = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
 
@@ -140,7 +140,7 @@ def dateieigenschaften(variante: dict) -> None:
     ersetzen(cargo, r'(?m)^(description = )"[^"]*"', rf'\1"{name}"')
 
 
-MINDESTLAENGE_PIN = 12
+MINDESTLAENGE_PIN = 16
 
 
 def fester_pin(variante: dict) -> None:

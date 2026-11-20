@@ -831,5 +831,10 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("rcb_banner_free_sub", "Diagnose und Fehlerbehebung"),
         ("rcb_banner_paid_title", "Kostenpflichtiger Service"),
         ("rcb_banner_paid_sub", "Einrichtung und Hilfe · {rate} je Stunde inkl. MwSt."),
+        ("rcb_banner_unattended_title", "Unbeaufsichtigter Fernzugriff"),
+        ("rcb_banner_unattended_sub", "Der Support kann sich ohne Rückfrage verbinden, solange dieses Programm geöffnet ist. Zum Beenden das Programm schließen."),
+        ("rcb_unattended_dialog_title", "Unbeaufsichtigten Fernzugriff freigeben?"),
+        ("rcb_unattended_dialog_text", "Solange dieses Programm geöffnet ist, kann sich der RAWCaptureBooth-Support jederzeit und ohne Rückfrage mit diesem PC verbinden, auch wenn niemand davor sitzt. Geschützt ist der Zugang durch ein festes Kennwort, das in allen Kopien dieses Programms gleich ist und das nur der Support kennt.\n\nStarten Sie das Programm nur, wenn sichergestellt ist, dass in dieser Zeit niemand Unbefugtes Zugriff auf den PC hat. Der PC bleibt wach, solange das Programm läuft. Sperren Sie Windows nicht und melden Sie sich nicht ab, sonst ist kein Zugriff möglich. Zum Beenden schließen Sie das Programm."),
+        ("rcb_unattended_confirm_btn", "Verstanden, Zugriff freigeben"),
     ].iter().cloned().collect();
 }

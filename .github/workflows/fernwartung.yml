@@ -1,8 +1,11 @@
-# RAWCaptureBooth-Fernwartung: baut die beiden gebrandeten Windows-Clients
+# RAWCaptureBooth-Fernwartung: baut die gebrandeten Windows-Clients
 #   RAWCaptureBooth-Support.exe    Kunde, kostenloser Support (Diagnose, Fehlerbehebung), nur eingehend,
 #                                  Quick Support ohne Installation
 #   RAWCaptureBooth-Service.exe    Kunde, kostenpflichtige Hilfe, wie Support, aber Annahme nur per
 #                                  Klick mit Kostenhinweis und AGB
+#   RAWCaptureBooth-Fernwartung.exe Kunde, kostenloser unbeaufsichtigter Zugriff: fester PIN (Geheimnis
+#                                  RCB_PIN_FERNWARTUNG, nur als Prüfsumme eingebettet), Zugang erst nach
+#                                  Bestätigung beim Start, solange das Programm läuft
 #   RAWCaptureBooth-Techniker.exe  Support, nur ausgehend
 #   RAWCaptureBooth-Fotobox.exe    eigene Fotoboxen, installierbar, Zugang nur über den
 #                                  dauerhaften PIN, der nach der Installation an der Box gesetzt wird
@@ -52,6 +55,7 @@ jobs:
         variante:
           - { id: kunde, name: RAWCaptureBooth-Support, quick-support: "1" }
           - { id: service, name: RAWCaptureBooth-Service, quick-support: "1" }
+          - { id: fernzugriff, name: RAWCaptureBooth-Fernwartung, quick-support: "1" }
           - { id: techniker, name: RAWCaptureBooth-Techniker, quick-support: "" }
           - { id: fotobox, name: RAWCaptureBooth-Fotobox, quick-support: "" }
     steps:
@@ -69,6 +73,9 @@ jobs:
 
       - name: Branding anwenden
         shell: bash
+        env:
+          # Nur die Variante fernzugriff liest ihn; eingebettet wird nur die Prüfsumme.
+          RCB_PIN_FERNWARTUNG: ${{ secrets.RCB_PIN_FERNWARTUNG }}
         run: |
           pip3 install pillow
           python3 branding/anwenden.py ${{ matrix.variante.id }}

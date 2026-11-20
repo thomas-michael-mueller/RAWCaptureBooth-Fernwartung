@@ -7,6 +7,7 @@ für den Support von RAWCaptureBooth. Server: `mueller.black` (eigener RustDesk-
 | --- | --- | --- |
 | `RAWCaptureBooth-Support.exe` | Kunde, kostenloser Support | nur eingehend, Quick Support ohne Installation, Einstellungen gesperrt, grüner Balken „Kostenloser Support“ |
 | `RAWCaptureBooth-Service.exe` | Kunde, kostenpflichtige Hilfe | wie Support, aber goldener Balken „Kostenpflichtiger Service“, €-Plakette im Symbol, Annahme nur per Klick mit Kostenhinweis |
+| `RAWCaptureBooth-Fernwartung.exe` | Kunde, unbeaufsichtigter Zugriff (kostenlos) | nur eingehend, Quick Support, Zugang nur über festen PIN, den nur der Support kennt, roter Balken „Unbeaufsichtigter Fernzugriff“ |
 | `RAWCaptureBooth-Techniker.exe` | Support | nur ausgehend, keine Installation |
 | `RAWCaptureBooth-Fotobox.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), Zugang nur über den dauerhaften PIN, ohne Annahme per Klick |
 
@@ -27,12 +28,18 @@ Einstellungen → Sicherheit ein dauerhaftes Passwort gesetzt (oder als Administ
 `"C:\Program Files\RAWCaptureBooth-Fotobox\RAWCaptureBooth-Fotobox.exe" --password <PIN>`). Solange keines gesetzt ist,
 ist kein Zugriff möglich. Server-, Netzwerk- und Proxy-Einstellungen sind ausgeblendet.
 
-`anwenden.py` kann über den Schlüssel `rcb-fester-pin` auch einen PIN aus einer Umgebungsvariable
-einbetten (nur als Prüfsumme, mindestens 12 Zeichen); keine Variante nutzt das derzeit.
+Fernwartungs-Client (`fernzugriff.json`): Kunde startet das Programm und kann den PC verlassen, der
+Support verbindet sich später mit dem festen PIN. `anwenden.py` liest den PIN über den Schlüssel
+`rcb-fester-pin` aus der Umgebungsvariable `RCB_PIN_FERNWARTUNG` (GitHub-Geheimnis gleichen Namens)
+und bettet nur die Prüfsumme mit Zufallswert ein, mindestens 16 Zeichen. Fehlt das Geheimnis, schlägt
+nur diese Variante fehl. Bei jedem Start ist der Zugang gesperrt (`rcb-unbeaufsichtigt`, Dienst
+gestoppt), bis der Kunde einen Hinweis bestätigt; „Beenden“ schließt das Programm. Solange es läuft,
+hält es den PC wach. Ein Einmalpasswort gibt es nicht. Neuer PIN: Geheimnis ändern und neu bauen;
+ältere Kopien behalten den alten PIN.
 
 ## Was gegenüber RustDesk geändert ist
 
-- `branding/` – Varianten (`kunde.json`, `service.json`, `techniker.json`, `fotobox.json`), Quellgrafiken, `anwenden.py`.
+- `branding/` – Varianten (`kunde.json`, `service.json`, `fernzugriff.json`, `techniker.json`, `fotobox.json`), Quellgrafiken, `anwenden.py`.
   `anwenden.py <variante>` kopiert die Variante nach `aktiv.json`, erzeugt Symbole und Logos,
   setzt die Akzentfarbe (RAWCaptureBooth-Gold) und die Dateieigenschaften.
 - `src/common.rs` – `load_rcb_branding()` liest `branding/aktiv.json` (beim Bauen eingebettet) im
@@ -41,7 +48,9 @@ einbetten (nur als Prüfsumme, mindestens 12 Zeichen); keine Variante nutzt das 
   ohne `-qs-` im Dateinamen.
 - `flutter/lib/desktop/pages/server_page.dart` – Kostenhinweis und Knopf „Kostenpflichtig annehmen“
   im Annahmefenster der Kunden-Variante; `src/lang/de.rs`, `src/lang/en.rs` – Texte dazu.
-- `.github/workflows/fernwartung.yml` – baut beide Varianten und signiert sie. Alle übrigen
+- `src/core_main.rs` – Fernwartungs-Client: Zugang beim Start gesperrt, PC wach halten;
+  `desktop_home_page.dart` – roter Balken, Bestätigung beim Start, kein Passwortfeld.
+- `.github/workflows/fernwartung.yml` – baut alle Varianten und signiert sie. Alle übrigen
   RustDesk-Workflows sind entfernt (außer `bridge.yml`, das gebraucht wird).
 
 ## Bauen

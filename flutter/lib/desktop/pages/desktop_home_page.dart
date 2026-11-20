@@ -78,19 +78,35 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   // RAWCaptureBooth-Fernwartung: Farbbalken, an dem Kunden den kostenlosen
   // Support-Client (grün) vom kostenpflichtigen Service-Client (gold) unterscheiden.
   // Gesteuert über "rcb-banner" in branding/<variante>.json.
+  // "unattended" (rot): Variante für unbeaufsichtigten Zugriff mit festem PIN.
   Widget buildRcbBanner() {
     final art = bind.mainGetHardOption(key: 'rcb-banner');
-    if (art != 'free' && art != 'paid') return const Offstage();
+    if (art != 'free' && art != 'paid' && art != 'unattended') {
+      return const Offstage();
+    }
     final paid = art == 'paid';
+    final unattended = art == 'unattended';
     final rate = bind.mainGetHardOption(key: 'rcb-stundensatz');
-    final titel = translate(paid ? 'rcb_banner_paid_title' : 'rcb_banner_free_title');
-    final text = translate(paid ? 'rcb_banner_paid_sub' : 'rcb_banner_free_sub')
+    final titel = translate(unattended
+        ? 'rcb_banner_unattended_title'
+        : paid
+            ? 'rcb_banner_paid_title'
+            : 'rcb_banner_free_title');
+    final text = translate(unattended
+            ? 'rcb_banner_unattended_sub'
+            : paid
+                ? 'rcb_banner_paid_sub'
+                : 'rcb_banner_free_sub')
         .replaceAll('{rate}', rate);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: paid ? MyTheme.accent : const Color(0xFF2E7D32),
+        color: unattended
+            ? const Color(0xFFC62828)
+            : paid
+                ? MyTheme.accent
+                : const Color(0xFF2E7D32),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -106,6 +122,40 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         ],
       ),
     ).marginOnly(left: 20, right: 16, top: 10, bottom: 4);
+  }
+
+  bool get _rcbUnbeaufsichtigt =>
+      bind.mainGetHardOption(key: 'rcb-unbeaufsichtigt') == 'Y';
+
+  // Der Zugang startet gesperrt (core_main.rs). Erst nach Bestätigung wird der
+  // Dienst eingeschaltet; „Beenden“ schließt das Programm.
+  void _rcbUnbeaufsichtigtBestaetigen() {
+    gFFI.dialogManager.show((setState, close, context) {
+      void bestaetigen() {
+        close();
+        start_service(true);
+      }
+
+      void beenden() {
+        SystemNavigator.pop();
+        if (isWindows) exit(0);
+      }
+
+      return CustomAlertDialog(
+        title: Text(translate('rcb_unattended_dialog_title')),
+        content: Text(translate('rcb_unattended_dialog_text'),
+            style: const TextStyle(height: 1.4)),
+        actions: [
+          dialogButton('Quit', onPressed: beenden, isOutline: true),
+          dialogButton('rcb_unattended_confirm_btn', onPressed: bestaetigen),
+        ],
+      );
+    }).catchError((_) {
+      // Overlay noch nicht bereit: später erneut versuchen.
+      Future.delayed(
+          const Duration(seconds: 1), _rcbUnbeaufsichtigtBestaetigen);
+      return null;
+    });
   }
 
   Widget buildLeftPane(BuildContext context) {
@@ -125,7 +175,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       if (!isOutgoingOnly) buildRcbBanner(),
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
-      if (!isOutgoingOnly) buildPasswordBoard(context),
+      // Unbeaufsichtigter Zugriff: nur fester PIN, den der Kunde nicht kennt.
+      if (!isOutgoingOnly && !_rcbUnbeaufsichtigt) buildPasswordBoard(context),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -884,6 +935,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     if (bind.isIncomingOnly()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _updateWindowSize();
+      });
+    }
+    if (_rcbUnbeaufsichtigt) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 500),
+            _rcbUnbeaufsichtigtBestaetigen);
       });
     }
     WidgetsBinding.instance.addObserver(this);

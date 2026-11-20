@@ -299,5 +299,10 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("rcb_banner_free_sub", "Diagnosis and troubleshooting"),
         ("rcb_banner_paid_title", "Paid service"),
         ("rcb_banner_paid_sub", "Setup and assistance · {rate} per hour incl. VAT"),
+        ("rcb_banner_unattended_title", "Unattended remote access"),
+        ("rcb_banner_unattended_sub", "Support can connect without asking while this program is open. Close the program to end access."),
+        ("rcb_unattended_dialog_title", "Allow unattended remote access?"),
+        ("rcb_unattended_dialog_text", "While this program is open, RAWCaptureBooth support can connect to this PC at any time without asking, even if nobody is in front of it. Access is protected by a fixed password that is the same in every copy of this program and known only to support.\n\nOnly start the program if you are sure that no unauthorised person can use the PC during this time. The PC stays awake while the program is running. Do not lock Windows or sign out, otherwise access is not possible. Close the program to end access."),
+        ("rcb_unattended_confirm_btn", "Understood, allow access"),
     ].iter().cloned().collect();
 }
