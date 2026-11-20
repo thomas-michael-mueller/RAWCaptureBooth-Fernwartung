@@ -127,35 +127,57 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   bool get _rcbUnbeaufsichtigt =>
       bind.mainGetHardOption(key: 'rcb-unbeaufsichtigt') == 'Y';
 
-  // Der Zugang startet gesperrt (core_main.rs). Erst nach Bestätigung wird der
-  // Dienst eingeschaltet; „Beenden“ schließt das Programm.
-  void _rcbUnbeaufsichtigtBestaetigen() {
-    gFFI.dialogManager.show((setState, close, context) {
-      void bestaetigen() {
-        close();
-        start_service(true);
-      }
+  // Der Zugang startet gesperrt (core_main.rs). Der Hinweis steht direkt im
+  // schmalen Kundenfenster (ein Dialog wäre dort zu eng); erst nach Bestätigung
+  // wird der Dienst eingeschaltet, „Beenden“ schließt das Programm.
+  bool _rcbFreigegeben = false;
 
-      void beenden() {
-        SystemNavigator.pop();
-        if (isWindows) exit(0);
-      }
-
-      return CustomAlertDialog(
-        title: Text(translate('rcb_unattended_dialog_title')),
-        content: Text(translate('rcb_unattended_dialog_text'),
-            style: const TextStyle(height: 1.4)),
-        actions: [
-          dialogButton('Quit', onPressed: beenden, isOutline: true),
-          dialogButton('rcb_unattended_confirm_btn', onPressed: bestaetigen),
+  Widget buildRcbFreigabe(BuildContext context) {
+    const rot = Color(0xFFC62828);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: rot, width: 1.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(translate('rcb_unattended_dialog_title'),
+              style: const TextStyle(
+                  fontSize: 14.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Text(translate('rcb_unattended_dialog_text'),
+              style: const TextStyle(fontSize: 12.5, height: 1.4)),
+          const SizedBox(height: 14),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: rot,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            onPressed: () {
+              start_service(true);
+              setState(() => _rcbFreigegeben = true);
+            },
+            child: Text(translate('rcb_unattended_confirm_btn'),
+                textAlign: TextAlign.center),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            onPressed: () {
+              SystemNavigator.pop();
+              if (isWindows) exit(0);
+            },
+            child: Text(translate('Quit')),
+          ),
         ],
-      );
-    }).catchError((_) {
-      // Overlay noch nicht bereit: später erneut versuchen.
-      Future.delayed(
-          const Duration(seconds: 1), _rcbUnbeaufsichtigtBestaetigen);
-      return null;
-    });
+      ),
+    ).marginOnly(left: 20, right: 16, top: 8, bottom: 8);
   }
 
   Widget buildLeftPane(BuildContext context) {
@@ -174,7 +196,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ),
       if (!isOutgoingOnly) buildRcbBanner(),
       buildTip(context),
-      if (!isOutgoingOnly) buildIDBoard(context),
+      if (!isOutgoingOnly && _rcbUnbeaufsichtigt && !_rcbFreigegeben)
+        buildRcbFreigabe(context),
+      if (!isOutgoingOnly && (!_rcbUnbeaufsichtigt || _rcbFreigegeben))
+        buildIDBoard(context),
       // Unbeaufsichtigter Zugriff: nur fester PIN, den der Kunde nicht kennt.
       if (!isOutgoingOnly && !_rcbUnbeaufsichtigt) buildPasswordBoard(context),
       FutureBuilder<Widget>(
@@ -935,12 +960,6 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     if (bind.isIncomingOnly()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _updateWindowSize();
-      });
-    }
-    if (_rcbUnbeaufsichtigt) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(milliseconds: 500),
-            _rcbUnbeaufsichtigtBestaetigen);
       });
     }
     WidgetsBinding.instance.addObserver(this);
