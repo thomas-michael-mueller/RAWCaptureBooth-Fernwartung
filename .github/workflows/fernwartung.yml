@@ -7,7 +7,7 @@
 #                                  RCB_PIN_FERNWARTUNG, nur als Prüfsumme eingebettet), Zugang erst nach
 #                                  Bestätigung beim Start, solange das Programm läuft
 #   RAWCaptureBooth-Techniker.exe  Support, nur ausgehend
-#   RAWCaptureBooth-Fotobox.exe    eigene Fotoboxen, installierbar, Zugang nur über den
+#   RAWCaptureBooth-Fotobox-Fernwartung.exe    eigene Fotoboxen, installierbar, Zugang nur über den
 #                                  dauerhaften PIN, der nach der Installation an der Box gesetzt wird
 #
 # Abgeleitet vom Windows-x64-Teil aus flutter-build.yml (RustDesk 1.5.1).
@@ -57,7 +57,7 @@ jobs:
           - { id: service, name: RAWCaptureBooth-Service, quick-support: "1" }
           - { id: fernzugriff, name: RAWCaptureBooth-Fernwartung, quick-support: "1" }
           - { id: techniker, name: RAWCaptureBooth-Techniker, quick-support: "" }
-          - { id: fotobox, name: RAWCaptureBooth-Fotobox, quick-support: "" }
+          - { id: fotobox, name: RAWCaptureBooth-Fotobox-Fernwartung, quick-support: "" }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6

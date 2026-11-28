@@ -9,7 +9,7 @@ für den Support von RAWCaptureBooth. Server: `mueller.black` (eigener RustDesk-
 | `RAWCaptureBooth-Service.exe` | Kunde, kostenpflichtige Hilfe | wie Support, aber goldener Balken „Kostenpflichtiger Service“, €-Plakette im Symbol, Annahme nur per Klick mit Kostenhinweis |
 | `RAWCaptureBooth-Fernwartung.exe` | Kunde, unbeaufsichtigter Zugriff (kostenlos) | nur eingehend, Quick Support, Zugang nur über festen PIN, den nur der Support kennt, roter Balken „Unbeaufsichtigter Fernzugriff“ |
 | `RAWCaptureBooth-Techniker.exe` | Support | nur ausgehend, keine Installation |
-| `RAWCaptureBooth-Fotobox.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), Zugang nur über den dauerhaften PIN, ohne Annahme per Klick |
+| `RAWCaptureBooth-Fotobox-Fernwartung.exe` | eigene Fotoboxen | nur eingehend, installierbar (Dienst), Zugang nur über den dauerhaften PIN, ohne Annahme per Klick |
 
 Support-Client: Zugang wie bei RustDesk üblich, Einmalpasswort und/oder Annahme per Klick.
 
@@ -25,7 +25,7 @@ den Knopf mit Kostenhinweis läuft; „Erhöhen“ bleibt nach der Annahme verf�
 
 Die Fotobox-Variante enthält keinen PIN. Nach der Installation wird an der Box unter
 Einstellungen → Sicherheit ein dauerhaftes Passwort gesetzt (oder als Administrator
-`"C:\Program Files\RAWCaptureBooth-Fotobox\RAWCaptureBooth-Fotobox.exe" --password <PIN>`). Solange keines gesetzt ist,
+`"C:\Program Files\RAWCaptureBooth-Fotobox-Fernwartung\RAWCaptureBooth-Fotobox-Fernwartung.exe" --password <PIN>`). Solange keines gesetzt ist,
 ist kein Zugriff möglich. Server-, Netzwerk- und Proxy-Einstellungen sind ausgeblendet.
 
 Fernwartungs-Client (`fernzugriff.json`): Kunde startet das Programm und kann den PC verlassen, der
